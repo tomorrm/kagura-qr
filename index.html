@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f7f8fa" />
+  <meta name="description" content="QRコードを美しく生成・補正・読み取り。画像は外部送信せず、ブラウザの中だけで処理します。" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./styles.css?v=__STYLES_HASH__" />
+  <title>Kagura QR — Make every code clear.</title>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" class="icon-bank" aria-hidden="true">
+    <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h2v2h-2zM20 14h1v3M14 20h3M20 20h1M17 17h2v2h-2z"/></symbol>
+    <symbol id="i-kagura-mark" viewBox="0 0 64 64">
+      <g fill="#f4f0e6"><rect x="5" y="5" width="14" height="14" rx="3.5"/><rect x="45" y="5" width="14" height="14" rx="3.5"/><rect x="5" y="45" width="14" height="14" rx="3.5"/></g>
+      <g fill="#1f222b"><rect x="8" y="8" width="8" height="8" rx="1.8"/><rect x="48" y="8" width="8" height="8" rx="1.8"/><rect x="8" y="48" width="8" height="8" rx="1.8"/></g>
+      <g fill="#91e4d2"><rect x="9.5" y="9.5" width="5" height="5" rx="1.1"/><rect x="49.5" y="9.5" width="5" height="5" rx="1.1"/><rect x="9.5" y="49.5" width="5" height="5" rx="1.1"/></g>
+      <path d="M23 21H30V28L39 20L44 25L36 32L44 39L39 44L30 36V43H23Z" fill="#f2bd66"/>
+      <path d="M30 28 39 20 41.7 22.7 33 30.5Z" fill="#f7cc77"/>
+      <path d="M31 33.5 35.5 31.6 42.2 38.2 39.2 41.2Z" fill="#dda350"/>
+      <rect x="29.5" y="30" width="4.5" height="4.5" rx=".8" fill="#91e4d2"/>
+      <g fill="#f5c46e"><rect x="41.5" y="41" width="4.6" height="4.6" rx=".45"/><rect x="47" y="46.2" width="3.3" height="3.3" rx=".35"/><rect x="51.5" y="50.5" width="2.25" height="2.25" rx=".25"/></g>
+    </symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 1.6 6.4L20 11l-6.4 1.6L12 19l-1.6-6.4L4 11l6.4-1.6L12 3Z"/><path d="m19 18 .8 2.2L22 21l-2.2.8L19 24l-.8-2.2L16 21l2.2-.8L19 18Z"/></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3M4 12h16"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 8 4v5c0 5.5-3.4 8.4-8 10-4.6-1.6-8-4.5-8-10V7l8-4Z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 13.5A9 9 0 0 1 10.5 3 9 9 0 1 0 21 13.5Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M19.07 4.93l-1.41 1.41M6.34 17.66l-1.41 1.41"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M14 4H9L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-4l-2-3Z"/><circle cx="12" cy="13" r="3"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 11v6m0-10v.2"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5 9a8 8 0 0 1 14-2l1 5M4 12l1 5a8 8 0 0 0 14-2"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6m0-6-9 9M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m3 17 5-5 4 4 4-4 5 5"/></symbol>
+    <symbol id="i-tune" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></symbol>
+  </svg>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="#" class="brand" aria-label="Kagura QR ホーム">
+        <span class="brand-mark"><svg class="brand-icon" aria-hidden="true" stroke="none"><use href="#i-kagura-mark" /></svg></span>
+        <span class="brand-text">Kagura<span class="brand-medium"> QR</span><span class="brand-caption">STUDIO</span></span>
+      </a>
+      <button type="button" class="icon-button mobile-theme-button" id="theme-btn-mobile" aria-label="テーマ切り替え"><svg><use href="#i-moon" /></svg></button>
+      <div class="sidebar-section-label">WORKSPACE</div>
+      <nav aria-label="メインメニュー" class="side-nav">
+        <button type="button" class="side-nav-item is-active" data-go="create"><svg><use href="#i-qr" /></svg> QRを生成</button>
+        <button type="button" class="side-nav-item" data-go="repair"><svg><use href="#i-spark" /></svg> QRを補正</button>
+        <button type="button" class="side-nav-item" data-go="scan"><svg><use href="#i-scan" /></svg> QRを読み取る</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="privacy-card"><span class="privacy-icon"><svg><use href="#i-shield" /></svg></span><strong>Private by design.</strong><p>すべて、あなたのデバイスで。<br>画像やデータは送信されません。</p></div>
+        <div class="sidebar-copyright">OPEN SOURCE <span class="copyright-dot">·</span> v0.6.0-rc.1</div>
+      </div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-crumb">Workspace <svg><use href="#i-chevron" /></svg> <span id="crumb-current">Generate</span></div>
+        <div class="topbar-tools"><span class="online-indicator"><span class="online-dot"></span> 100% Local processing</span><button type="button" class="icon-button" id="theme-btn" aria-label="テーマ切り替え"><svg><use href="#i-moon" /></svg></button></div>
+      </header>
+      <div class="page-inner">
+        <section class="page-head"><div class="eyebrow"><span class="eyebrow-line"></span> QR WORKSPACE <span class="version-pill">01 / 03</span></div><h1>Make every code <em>clear.</em></h1><p>生成も、読み取りも、かすれたコードの補正も。<br class="desktop-only">必要なことだけを、美しくシンプルに。</p></section>
+        <section class="workspace" aria-label="QR ワークスペース">
+          <div class="tab-strip" role="tablist" aria-label="機能を選択">
+            <button type="button" id="tab-create" class="tab-item is-current" role="tab" aria-selected="true" aria-controls="panel-create" data-go="create"><svg><use href="#i-qr" /></svg>生成する</button>
+            <button type="button" id="tab-repair" class="tab-item" role="tab" aria-selected="false" aria-controls="panel-repair" data-go="repair"><svg><use href="#i-spark" /></svg>補正する</button>
+            <button type="button" id="tab-scan" class="tab-item" role="tab" aria-selected="false" aria-controls="panel-scan" data-go="scan"><svg><use href="#i-scan" /></svg>読み取る</button>
+          </div>
+          <div id="panel-create" role="tabpanel" aria-labelledby="tab-create" class="panel">
+            <div class="two-column">
+              <div class="editor-side"><div class="section-header"><div><div class="section-step">01 — CREATE</div><h2>QRコードを作成</h2><p>内容を入力するだけ。すぐにプレビュー。</p></div></div>
+                <div class="field"><label class="field-label">コンテンツの種類</label><div class="pill-switch" role="group" aria-label="コンテンツの種類"><button class="pill is-selected" type="button" data-format="url">URL</button><button class="pill" type="button" data-format="text">テキスト</button><button class="pill" type="button" data-format="wifi">Wi-Fi</button></div></div>
+                <div class="field" id="main-input-field"><label class="field-label" for="content-input" id="content-label">リンク先のURL</label><textarea id="content-input" spellcheck="false" rows="3" placeholder="https://example.com">https://example.com</textarea><div class="field-hint">入力した情報はブラウザ内で処理されます。</div></div>
+                <div id="wifi-fields" hidden><div class="field"><label class="field-label" for="wifi-ssid">ネットワーク名 (SSID)</label><input type="text" id="wifi-ssid" placeholder="Wi-Fi network" autocomplete="off" /></div><div class="field"><label class="field-label" for="wifi-pass">パスワード</label><input type="text" id="wifi-pass" placeholder="Password" autocomplete="off" /></div><div class="field"><label class="field-label" for="wifi-auth">認証方式</label><select id="wifi-auth"><option value="WPA">WPA / WPA2 / WPA3</option><option value="WEP">WEP</option><option value="nopass">なし</option></select></div></div>
+                <div class="split-fields"><div class="field"><label class="field-label" for="error-level">誤り訂正レベル <span class="hint-help" title="レベルを上げると破損への耐性が高くなります">ⓘ</span></label><select id="error-level"><option value="L">低い · 7%</option><option value="M">標準 · 15%</option><option value="Q">高い · 25%</option><option value="H" selected>最高 · 30%</option></select></div><div class="field"><label class="field-label">カラー</label><div class="swatches" role="group" aria-label="QRの色"><button type="button" data-color="#17191f" class="swatch selected" style="--swatch:#17191f" aria-label="グラファイト" title="グラファイト"></button><button type="button" data-color="#2156e8" class="swatch" style="--swatch:#2156e8" aria-label="ブルー" title="ブルー"></button><button type="button" data-color="#006d5b" class="swatch" style="--swatch:#006d5b" aria-label="グリーン" title="グリーン"></button></div></div></div>
+                <details class="advanced-details signature-create"><summary><svg><use href="#i-shield" /></svg> 署名付きQR <span class="summary-note">改ざん検知・発行者確認</span></summary>
+                  <div class="advanced-content">
+                    <p class="signature-help">署名を付けると、対応リーダーで内容の変更を検出できます。通常のQRリーダーには署名データが表示されます。</p>
+                    <div class="signature-buttons"><button type="button" id="key-generate" class="btn btn-secondary">新しい鍵を生成</button><button type="button" id="key-import" class="btn btn-secondary">鍵を読み込む</button><input type="file" id="key-import-file" accept=".json,application/json" hidden /></div>
+                    <div id="key-status" class="signature-key">鍵がありません。最初に生成してください。</div><button type="button" id="key-copy-fingerprint" class="signature-link" disabled>公開鍵の指紋をコピー</button>
+                    <div class="field"><label class="field-label" for="key-passphrase">秘密鍵バックアップ用パスフレーズ（12文字以上）</label><input type="password" id="key-passphrase" minlength="12" maxlength="1024" autocomplete="new-password" placeholder="鍵の保存・読み込み時に入力" /></div>
+                    <div class="field"><label class="field-label" for="signature-expiry">署名付きQRの有効期限</label><select id="signature-expiry"><option value="0">なし</option><option value="3600">1時間</option><option value="86400">1日</option><option value="604800">7日</option><option value="2592000">30日</option></select></div>
+                    <button type="button" id="key-export" class="signature-link" disabled>秘密鍵を暗号化して保存（AES-256-GCM）</button>
+                    <button type="button" id="sign-create" class="btn btn-primary sign-button" disabled>署名付きQRを生成</button>
+                    <details class="advanced-details">
+                      <summary>署名付き失効リストを管理</summary>
+                      <p class="signature-help">QR発行鍵とは独立した管理者鍵を使ってください。公開鍵指紋は検証者へ別経路で配布し、失効リストは定期的に更新してください。</p>
+                      <div class="signature-buttons"><button type="button" id="revocation-key-generate" class="btn btn-secondary">管理者鍵を生成</button><button type="button" id="revocation-key-import" class="btn btn-secondary">管理者鍵を読み込む</button><input type="file" id="revocation-key-import-file" accept=".json,application/json" hidden /></div>
+                      <div id="revocation-key-status" class="signature-key">失効リスト管理者鍵がありません。</div>
+                      <div class="field"><label class="field-label" for="revocation-key-passphrase">管理者鍵バックアップ用パスフレーズ（12文字以上）</label><input type="password" id="revocation-key-passphrase" minlength="12" maxlength="1024" autocomplete="new-password" /></div>
+                      <button type="button" id="revocation-key-export" class="signature-link" disabled>管理者鍵を暗号化して保存（AES-256-GCM）</button>
+                      <button type="button" id="revocation-list-export" class="btn btn-secondary" disabled>現在の失効情報に署名して保存</button>
+                      <p id="revocation-error" class="error-message" role="alert" hidden></p>
+                    </details>
+                    <p class="signature-help">秘密鍵はこのタブ内のメモリにのみ保持します。保存時はパスフレーズで暗号化し、読み込み時にも同じパスフレーズを使用します。発行者の検証には、別経路で共有した公開鍵のSHA-256指紋が必要です。</p>
+                    <p id="sign-error" class="error-message" role="alert" hidden></p>
+                  </div>
+                </details>
+                <details class="advanced-details qr-extras"><summary><svg><use href="#i-tune" /></svg> 品質診断・一括生成 <span class="summary-note">印刷とCSV</span></summary>
+                  <div class="advanced-content">
+                    <div class="split-fields"><div class="field"><label class="field-label" for="print-mm">印刷幅（mm）</label><input id="print-mm" type="number" min="5" max="1000" value="40" step="1" inputmode="decimal" /></div>
+                    <div class="field"><label class="field-label" for="print-dpi">解像度（dpi）</label><select id="print-dpi"><option value="150">150</option><option value="300" selected>300</option><option value="600">600</option><option value="1200">1200</option></select></div></div>
+                    <div class="quality-result" id="quality-result" role="status" aria-live="polite">QRを生成すると、印刷前チェックを表示します。</div>
+                    <p class="signature-help">印刷サイズ・コントラスト・余白の簡易検査。ISO認証や実機読取の保証ではありません。</p>
+                    <label class="check-field"><input type="checkbox" id="png-watermark" /> PNGに非認証の実験的透かしを埋め込む</label><p class="signature-help">余白の微小な画素変化にSHA-256識別子を隠します。JPEG・再圧縮・拡縮で失われます。改ざん検知や発行者認証には必ず電子署名を使用してください。</p>
+                    <div class="field"><label class="field-label" for="batch-csv">CSVからQRを一括生成（最大100件）</label><input id="batch-csv" type="file" accept=".csv,text/csv,text/plain" /></div>
+                    <button type="button" id="batch-generate" class="btn btn-secondary full-btn">CSVからSVGをまとめてZIP保存</button>
+                    <p id="batch-status" class="signature-help" role="status" aria-live="polite">CSVは1列で、先頭の見出し content は省略可能です。</p>
+                  </div>
+                </details>
+                <div class="editor-notice"><svg><use href="#i-info" /></svg><span>余白4モジュールを自動確保。読み取りやすいQRコードを生成します。</span></div>
+              </div>
+              <div class="preview-side"><div class="preview-heading"><span>LIVE PREVIEW</span><span class="preview-live"><span></span> Ready</span></div><div class="preview-stage"><div id="qr-surface" class="qr-surface"><canvas id="qr-canvas" aria-label="生成されたQRコード"></canvas><div id="qr-placeholder" class="qr-placeholder" hidden>内容を入力してください</div></div></div><div class="preview-meta"><span id="qr-meta">QR Code · Level H</span><span id="qr-size">—</span></div><p id="create-error" class="error-message" role="alert" hidden></p><div class="download-actions"><button type="button" id="download-png" class="btn btn-primary"><svg><use href="#i-download" /></svg> PNGで保存</button><button type="button" id="download-svg" class="btn btn-secondary">SVG <svg><use href="#i-arrow" /></svg></button><button type="button" id="print-qr" class="btn btn-secondary">印刷 / PDF</button></div></div>
+            </div>
+          </div>
+          <div id="panel-repair" role="tabpanel" aria-labelledby="tab-repair" class="panel" hidden>
+            <div class="section-header section-header-full"><div><div class="section-step">02 — ENHANCE</div><h2>読み取れないQRも、もう一度。</h2><p>画像をアップロード。最適な補正方法を自動で探します。</p></div><span class="feature-tag"><svg><use href="#i-spark" /></svg> Smart enhance</span></div>
+            <div class="upload-zone" id="repair-drop" tabindex="0" role="button" aria-label="補正する画像を選択"><div class="upload-glyph"><svg><use href="#i-image" /></svg><span class="upload-plus">+</span></div><strong>画像をここにドロップ</strong><span>またはクリックしてファイルを選択</span><small>PNG / JPEG / WebP · 最大20MB</small><input id="repair-file" type="file" accept="image/png,image/jpeg,image/webp" hidden /></div>
+            <div id="repair-results" class="repair-results" hidden><div class="repair-image-grid"><div class="image-panel"><div class="image-title"><span>ORIGINAL</span><span class="image-muted">入力画像</span></div><div class="image-stage"><canvas id="repair-original" aria-label="補正前の画像"></canvas></div></div><div class="image-panel"><div class="image-title"><span>ENHANCED</span><span class="image-badge">処理後</span></div><div class="image-stage"><canvas id="repair-enhanced" aria-label="補正後の画像"></canvas></div></div></div><div class="progress-line"><span id="repair-status">準備完了</span><span id="repair-percent">—</span></div><div class="progress-track"><span id="repair-progress"></span></div><details class="advanced-details"><summary><svg><use href="#i-tune" /></svg> 手動で調整 <span class="summary-note">自動補正で読み取れない場合</span></summary><div class="advanced-content"><div class="field"><label class="field-label" for="manual-contrast">コントラスト <span id="manual-contrast-value">30</span></label><input id="manual-contrast" type="range" min="0" max="100" value="30" /></div><div class="split-fields"><div class="field"><label class="field-label" for="manual-threshold">二値化</label><select id="manual-threshold"><option value="none">なし</option><option value="auto">自動 (大津の方法)</option></select></div><div class="field"><label class="field-label" for="manual-rotation">回転</label><select id="manual-rotation"><option value="0">0°</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></div></div><label class="check-field"><input type="checkbox" id="manual-invert"/> 白黒を反転</label><div class="perspective-tools"><p>台形歪み：元画像の左上 → 右上 → 右下 → 左下を順番にタップします。</p>
+  <div class="signature-buttons"><button type="button" class="btn btn-secondary" id="perspective-auto-detect">自動で四隅を検出</button><button type="button" class="btn btn-secondary" id="perspective-select">手動で四隅を選択</button><button type="button" class="btn btn-secondary" id="perspective-reset">クリア</button></div>
+  <p class="signature-help">ブラウザの検出に加え、画像内の3つの位置検出パターンから四隅を推定します。欠損した内容は推測しません。検出できない場合は手動で指定してください。</p>
+  <p class="perspective-status" id="perspective-status" aria-live="polite">未選択</p>
+  <details class="perspective-numeric"><summary>キーボードで四隅を指定（画像幅・高さの%）</summary>
+    <div class="perspective-coordinate-grid">
+      <label>左上 X <input type="number" id="corner-tl-x" min="0" max="100" value="5"/></label>
+      <label>左上 Y <input type="number" id="corner-tl-y" min="0" max="100" value="5"/></label>
+      <label>右上 X <input type="number" id="corner-tr-x" min="0" max="100" value="95"/></label>
+      <label>右上 Y <input type="number" id="corner-tr-y" min="0" max="100" value="5"/></label>
+      <label>右下 X <input type="number" id="corner-br-x" min="0" max="100" value="95"/></label>
+      <label>右下 Y <input type="number" id="corner-br-y" min="0" max="100" value="95"/></label>
+      <label>左下 X <input type="number" id="corner-bl-x" min="0" max="100" value="5"/></label>
+      <label>左下 Y <input type="number" id="corner-bl-y" min="0" max="100" value="95"/></label>
+    </div>
+    <button type="button" class="btn btn-secondary" id="perspective-numeric-apply">座標を適用</button>
+  </details>
+  <button type="button" class="btn btn-secondary" id="perspective-apply" disabled>台形補正して読み取る</button>
+</div><button type="button" id="manual-apply" class="btn btn-secondary"><svg><use href="#i-refresh" /></svg> 再調整して読み取り</button></div></details><div id="repair-found" class="found-result" hidden><div class="found-head"><span class="found-dot"></span><strong>読み取りに成功しました</strong></div><p>元データから鮮明なQRコードを再生成できます。</p><div class="detected-text" id="repair-text"></div><div class="signature-verify" id="repair-verification" hidden>
+  <div class="signature-verdict" id="repair-verdict" aria-live="polite"></div>
+  <div id="repair-signed-content" class="signature-signed-text" hidden></div>
+  <details><summary>発行者の公開鍵を照合</summary><label class="field-label" for="repair-trusted-key">信頼済みSHA-256指紋（64桁）</label><input type="text" id="repair-trusted-key" class="signature-fingerprint" maxlength="64" autocomplete="off" spellcheck="false" placeholder="別経路で受け取った64桁の16進数"/><button type="button" class="btn btn-secondary" id="repair-verify">公開鍵を確認</button><button type="button" class="btn btn-secondary" id="repair-revoke" hidden>この発行鍵をこのタブで失効</button><p class="signature-help">QR内の公開鍵だけでは発行者を証明できません。失効登録はこのタブのメモリ内のみで、再読み込みすると消去されます。</p></details>
+</div><div class="result-actions"><button type="button" class="btn btn-primary" id="repair-regenerate"><svg><use href="#i-qr" /></svg> きれいなQRで再生成</button><button type="button" class="btn btn-secondary" id="repair-copy"><svg><use href="#i-copy" /></svg> 内容をコピー</button></div></div><p id="repair-error" class="error-message" role="status" hidden></p></div>
+          </div>
+          <div id="panel-scan" role="tabpanel" aria-labelledby="tab-scan" class="panel" hidden>
+            <div class="section-header section-header-full"><div><div class="section-step">03 — SCAN</div><h2>かざすだけで、読み取り。</h2><p>カメラまたは画像から。リンク先は勝手に開きません。</p></div><span class="feature-tag"><svg><use href="#i-shield" /></svg> Safe preview</span></div>
+            <div class="scan-grid"><div class="camera-box"><div class="camera-corners"><span></span><span></span><span></span><span></span></div><video id="scan-video" autoplay playsinline muted hidden></video><div id="camera-empty" class="camera-empty"><span class="camera-glyph"><svg><use href="#i-camera" /></svg></span><strong>カメラでスキャン</strong><p>必要な時だけ、カメラへのアクセスを許可します。</p></div></div><div class="camera-aside"><div class="aside-caption">CHOOSE INPUT</div><h3>読み取り方法を選択</h3><p>すべての処理はデバイス内で完結します。</p><button type="button" id="camera-start" class="btn btn-primary full-btn"><svg><use href="#i-camera" /></svg> カメラを起動</button><button type="button" id="camera-stop" class="btn btn-secondary full-btn" hidden>カメラを停止</button><button type="button" id="scan-upload-btn" class="btn btn-secondary full-btn"><svg><use href="#i-upload" /></svg> 画像をアップロード</button><input id="scan-file" type="file" accept="image/png,image/jpeg,image/webp" hidden /><div class="aside-footnote"><svg><use href="#i-lock" /></svg> カメラ映像は保存・送信されません</div></div></div>
+            <details class="advanced-details qr-extras"><summary><svg><use href="#i-tune" /></svg> 複数画像を一括読み取り <span class="summary-note">CSV結果の保存</span></summary>
+              <div class="advanced-content"><div class="field"><label class="field-label" for="scan-batch-files">画像を選択（最大30枚）</label><input id="scan-batch-files" type="file" accept="image/png,image/jpeg,image/webp" multiple /></div>
+              <button type="button" id="scan-batch-run" class="btn btn-secondary full-btn">一括読み取り結果をCSVで保存</button>
+              <button type="button" id="scan-batch-cancel" class="btn btn-secondary full-btn" hidden>一括読み取りを中断</button>
+              <p id="scan-batch-status" class="signature-help" role="status" aria-live="polite">画像は外部送信されません。</p></div></details>
+            <details class="advanced-details">
+              <summary><svg><use href="#i-image" /></svg> PDFの複数ページからQRを抽出 <span class="summary-note">ローカル処理・最大10ページ</span></summary>
+              <div class="advanced-content">
+                <div class="field"><label class="field-label" for="scan-pdf-file">PDFを選択（最大20MB・10ページ）</label><input id="scan-pdf-file" type="file" accept="application/pdf,.pdf" /></div>
+                <button type="button" id="scan-pdf-run" class="btn btn-secondary full-btn">全ページを読み取りCSV保存</button>
+                <button type="button" id="scan-pdf-cancel" class="btn btn-secondary full-btn" hidden>読み取りを中断</button>
+                <p id="scan-pdf-status" class="signature-help" role="status" aria-live="polite">PDFとページは端末内で処理します。最大10ページ、各ページ最大1600px・240万画素。</p>
+              </div>
+            </details>
+            <details class="advanced-details">
+              <summary><svg><use href="#i-shield" /></svg> 署名付き失効リストを読み込む</summary>
+              <div class="advanced-content">
+                <div class="field"><label class="field-label" for="scan-revocation-authority">信頼済み管理者鍵のSHA-256指紋（64桁）</label><input type="text" id="scan-revocation-authority" class="signature-fingerprint" maxlength="64" autocomplete="off" spellcheck="false" placeholder="別経路で受け取った64桁の16進数" /></div>
+                <div class="field"><label class="field-label" for="scan-revocation-file">署名付き失効リスト（JSON・最大512KB）</label><input id="scan-revocation-file" type="file" accept="application/json,.json" /></div>
+                <p id="scan-revocation-status" class="signature-help" role="status" aria-live="polite">管理者鍵の指紋を独立して確認してください。リストはこのタブ内だけで適用され、再読み込みすると消去されます。</p>
+              </div>
+            </details>
+            <div id="scan-multi" class="multi-result" hidden aria-live="polite"></div>
+            <div id="scan-result" class="scan-result" hidden><div class="scan-result-title"><span class="found-dot"></span><strong>読み取り結果</strong><span id="scan-type" class="scan-type"></span></div><div id="scan-value" class="detected-text"></div><p id="scan-caution" class="scan-caution" hidden></p><div class="signature-verify" id="scan-verification" hidden>
+  <div class="signature-verdict" id="scan-verdict" aria-live="polite"></div>
+  <div id="scan-signed-content" class="signature-signed-text" hidden></div>
+  <details><summary>発行者の公開鍵を照合</summary><label class="field-label" for="scan-trusted-key">信頼済みSHA-256指紋（64桁）</label><input type="text" id="scan-trusted-key" class="signature-fingerprint" maxlength="64" autocomplete="off" spellcheck="false" placeholder="別経路で受け取った64桁の16進数"/><button type="button" class="btn btn-secondary" id="scan-verify">公開鍵を確認</button><button type="button" class="btn btn-secondary" id="scan-revoke" hidden>この発行鍵をこのタブで失効</button><p class="signature-help">署名の整合性と発行者の信頼は別です。失効登録はこのタブのメモリ内のみで、再読み込みすると消去されます。</p></details>
+</div><div class="result-actions"><button type="button" class="btn btn-primary" id="scan-copy"><svg><use href="#i-copy" /></svg> コピーする</button><button type="button" class="btn btn-secondary" id="scan-regenerate">QRを作成 <svg><use href="#i-arrow" /></svg></button><a id="scan-open" class="btn btn-secondary" rel="noopener noreferrer" target="_blank" hidden>明示的にリンクを開く <svg><use href="#i-external" /></svg></a></div></div><p id="scan-error" class="error-message" role="alert" hidden></p>
+          </div>
+        </section>
+        <div class="benefits"><div class="benefit"><div class="benefit-icon"><svg><use href="#i-lock" /></svg></div><div><strong>プライベートが標準</strong><span>アップロード不要のローカル処理</span></div></div><div class="benefit"><div class="benefit-icon"><svg><use href="#i-spark" /></svg></div><div><strong>見やすく、使いやすく</strong><span>複雑な設定なしで素早く作成</span></div></div><div class="benefit"><div class="benefit-icon"><svg><use href="#i-shield" /></svg></div><div><strong>オープンで安心</strong><span>追跡なし・アカウント不要</span></div></div></div>
+        <footer class="footer"><span>© 2026 Kagura QR. Made for clarity.</span><span>LOCAL-FIRST <span class="copyright-dot">·</span> OPEN SOURCE</span></footer>
+      </div>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.tmp/
+release-evidence/
+__pycache__/
+*.py[cod]
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example

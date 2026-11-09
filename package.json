@@ -1,0 +1,29 @@
+{
+  "name": "kagura-qr",
+  "version": "0.6.0-rc.1",
+  "private": true,
+  "type": "module",
+  "description": "Local-first QR code creation, repair, and reading",
+  "scripts": {
+    "dev": "pnpm build && node scripts/serve.mjs dist",
+    "test": "node --test tests/*.test.mjs",
+    "build": "node scripts/build.mjs",
+    "check": "pnpm test && pnpm check:source && pnpm check:security && pnpm check:a11y && pnpm build && pnpm verify:dist",
+    "preview": "node scripts/serve.mjs dist",
+    "verify:dist": "node scripts/verify-dist.mjs",
+    "check:source": "node scripts/check-source.mjs",
+    "check:a11y": "python3 scripts/a11y_audit.py",
+    "check:security": "node scripts/security-audit.mjs"
+  },
+  "dependencies": {
+    "jsqr": "1.4.0",
+    "pdfjs-dist": "5.4.394",
+    "qrcode-generator": "2.0.4",
+    "zxing-wasm": "3.1.6"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "license": "MIT",
+  "packageManager": "pnpm@12.17.0"
+}

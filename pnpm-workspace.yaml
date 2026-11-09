@@ -1,0 +1,5 @@
+# Package manager executable is pinned by package.json and CI.
+# The version check is delegated to the CI setup action rather than auto-download.
+pmOnFail: ignore
+packages:
+  - .
